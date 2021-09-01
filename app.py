@@ -285,7 +285,7 @@ def edit_ticket(ticket_id):
 
 
 # ---Get Product by ID---
-@app.route('/get-product/<int:product_id>/', methods=["GET"])
+@app.route('/get-ticket/<int:ticket_id>/', methods=["GET"])
 def get_ticket(ticket_id):
     response = {}
 
@@ -298,6 +298,21 @@ def get_ticket(ticket_id):
         response["data"] = cursor.fetchone()
 
     return jsonify(response)
+
+
+# @app.route('/get-tkt/<from_>/', methods=["GET"])
+# def get_tkt(from_):
+#     response = {}
+#
+#     with sqlite3.connect("plane_tkt.db") as conn:
+#         cursor = conn.cursor()
+#         cursor.execute("SELECT * FROM tickets WHERE from_=" + str(from_))
+#
+#         response["status_code"] = 200
+#         response["description"] = "ticket retrieved successfully"
+#         response["data"] = cursor.fetchone()
+#
+#     return jsonify(response)
 
 
 if __name__ == "__main__":
