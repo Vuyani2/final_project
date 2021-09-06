@@ -310,19 +310,17 @@ def get_ticket(ticket_id):
     return jsonify(response)
 
 
-# @app.route('/get-tkt/<from_>/', methods=["GET"])
-# def get_tkt(from_):
-#     response = {}
-#
-#     with sqlite3.connect("plane_tkt.db") as conn:
-#         cursor = conn.cursor()
-#         cursor.execute("SELECT * FROM tickets WHERE from_=" + str(from_))
-#
-#         response["status_code"] = 200
-#         response["description"] = "ticket retrieved successfully"
-#         response["data"] = cursor.fetchone()
-#
-#     return jsonify(response)
+@app.route('/get-tkt/<from_>/<to_>', methods=["GET"])
+def get_tkt(from_, to_):
+    response = {}
+
+    with sqlite3.connect("plane_tkt.db") as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM tickets WHERE to_ =? AND from_=?", (to_, from_))
+        response["status_code"] = 200
+        response["description"] = "ticket retrieved successfully"
+        response["data"] = cursor.fetchall()
+    return jsonify(response)
 
 
 if __name__ == "__main__":
