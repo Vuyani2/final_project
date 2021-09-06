@@ -8,6 +8,13 @@ from flask import Flask, request, jsonify, redirect
 from flask_jwt import JWT, jwt_required, current_identity
 
 
+# This function create dictionaries out of SQL rows, so that the data follows JSON format
+def dict_factory(cursor, row):
+    d = {}
+    for idx, col in enumerate(cursor.description):
+        d[col[0]] = row[idx]
+    return d
+
 class User(object):
     def __init__(self, id, username, password):
         self.id = id
@@ -163,6 +170,7 @@ def add_ticket():
 def get_tickets():
     response = {}
     with sqlite3.connect("plane_tkt.db") as conn:
+        conn.row_factory = dict_factory
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM tickets")
 
@@ -178,6 +186,7 @@ def get_tickets():
 def sort_tickets():
     response = {}
     with sqlite3.connect("plane_tkt.db") as conn:
+        conn.row_factory = dict_factory
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM tickets ORDER BY price")
 
@@ -290,6 +299,7 @@ def get_ticket(ticket_id):
     response = {}
 
     with sqlite3.connect("plane_tkt.db") as conn:
+        conn.row_factory = dict_factory
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM tickets WHERE id=" + str(ticket_id))
 
@@ -318,3 +328,5 @@ def get_ticket(ticket_id):
 if __name__ == "__main__":
     app.debug = True
     app.run()
+
+
