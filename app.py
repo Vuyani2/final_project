@@ -389,14 +389,14 @@ def reminder_email(user_id):
         print(tkts[8])
 
 
-        from_ = tkts[2]
-        to_ = tkts[3]
-        plane = tkts[4]
-        depature = tkts[5]
-        arrival = tkts[6]
-        price = tkts[7]
-        type_ = tkts[8]
-        date_bought = tkts[10]
+        from_ = tkts[1]
+        to_ = tkts[2]
+        plane = tkts[3]
+        depature = tkts[4]
+        arrival = tkts[5]
+        price = tkts[6]
+        type_ = tkts[7]
+        date_bought = tkts[9]
 
         send_email("you successfully bought a ticket thank oy for using Cheap Tickets", "hey "
                    + first_name + " this is to confirm that you have succefully bought a plane ticket to travel from " +
