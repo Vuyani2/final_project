@@ -134,6 +134,20 @@ def user_registration():
             response["status_code"] = 201
         return response
 
+@app.route('/get-user/', methods=["GET"])
+def get_user():
+    response = {}
+    with sqlite3.connect("plane_tkt.db") as conn:
+        conn.row_factory = dict_factory
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM user")
+
+        tickets = cursor.fetchall()
+
+    response['status_code'] = 200
+    response['data'] = tickets
+    return response
+
 
 # ---Creating Products---
 @app.route('/add-ticket/', methods=["POST"])
@@ -357,26 +371,38 @@ def reminder_email(user_id):
 
     print(user)
 
-    first_name = user[1] + user[2]
-    email = user[3]
+    first_name = user[2] + user[3]
+    email = user[1]
     print(email)
     with sqlite3.connect("plane_tkt.db") as conn:
         cursor = conn.cursor()
         cursor.execute(f"SELECT * FROM tickets WHERE user_id='{user_id}'")
-        chores = cursor.fetchone()
+        tkts = cursor.fetchone()
 
-        print(chores)
-        print(chores[2])
-        print(chores[4])
-        print(chores[5])
+        print(tkts)
+        print(tkts[2])
+        print(tkts[3])
+        print(tkts[4])
+        print(tkts[5])
+        print(tkts[6])
+        print(tkts[7])
+        print(tkts[8])
 
-        types_of_chores = chores[2]
-        time = chores[4]
-        date = chores[5]
+
+        from_ = tkts[2]
+        to_ = tkts[3]
+        plane = tkts[4]
+        depature = tkts[5]
+        arrival = tkts[6]
+        price = tkts[7]
+        type_ = tkts[8]
+        date_bought = tkts[10]
 
         send_email("you successfully bought a ticket thank oy for using Cheap Tickets", "hey "
-                   + first_name + " here is your Schedule " +
-                   types_of_chores + " at " + time + " on the " + date, email)
+                   + first_name + " this is to confirm that you have succefully bought a plane ticket to travel from " +
+                    from_ + " to " + to_ + " flying with " + plane + "the plane will be taking of at " + depature +
+                   " the arrival time will be at " + arrival + " the ticket is a " + type_ + " at a price of " + price +
+                   " on the " + date_bought, email)
         response["status_code"] = 200
         response["description"] = "chores  sent successfully"
     return jsonify(response)
