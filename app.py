@@ -72,8 +72,22 @@ def init_tickets_table():
     print("tickets table created successfully.")
 
 
+#---Creating Car Hire Table---
+def init_car_hire_table():
+    with sqlite3.connect('plane_tkt.db') as conn:
+        conn.execute("CREATE TABLE IF NOT EXISTS car_hire (id INTEGER PRIMARY KEY AUTOINCREMENT,"
+                     "car_name TEXT NOT NULL,"
+                     "pick_up TEXT NOT NULL,"
+                     "supplier TEXT NOT NULL,"
+                     "time TEXT NOT NULL,"
+                     "fuel_policy TEXT NOT NULL,"
+                     "price TEXT NOT NULL,"
+                     "date_ordered TEXT NOT NULL)")
+        print("car_hire table created successfully.")
+
 init_user_table()
 init_tickets_table()
+init_car_hire_table()
 
 users = fetch_users()
 
@@ -156,6 +170,35 @@ def add_ticket():
     response = {}
 
     if request.method == "POST":
+        car_name = request.json['car_name']
+        pick_up = request.json['pick_up']
+        supplier = request.json['supplier']
+        time = request.json['time']
+        fuel_policy = request.json['fuel_policy']
+        price = request.json['price']
+        date_ordered = datetime.datetime.now()
+
+        with sqlite3.connect('plane_tkt.db') as conn:
+            cursor = conn.cursor()
+            cursor.execute("INSERT INTO car_hire ("
+                           "car_name,"
+                           "pick_up,"
+                           "supplier,"
+                           "time,"
+                           "fuel_policy,"
+                           "price,"
+                           "date_ordered) VALUES(?, ?, ?, ?, ?, ?, ?)", (car_name, pick_up, supplier, time, fuel_policy, price, date_ordered))
+            conn.commit()
+            response["status_code"] = 201
+            response['description'] = "Car added successfully"
+        return response
+
+@app.route('/add-car/', methods=["POST"])
+#@jwt_required()
+def add_car():
+    response = {}
+
+    if request.method == "POST":
         from_ = request.json['from_']
         to_ = request.json['to_']
         airline = request.json['airline']
@@ -164,6 +207,7 @@ def add_ticket():
         price = request.json['price']
         type_ = request.json['type_']
         user_id = request.json['user_id']
+
         date_bought = datetime.datetime.now()
 
         with sqlite3.connect('plane_tkt.db') as conn:
@@ -182,6 +226,21 @@ def add_ticket():
             response["status_code"] = 201
             response['description'] = "Ticket added successfully"
         return response
+
+# ---Get Car---
+@app.route('/get-car/', methods=["GET"])
+def get_car():
+    response = {}
+    with sqlite3.connect("plane_tkt.db") as conn:
+        conn.row_factory = dict_factory
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM car_hire")
+
+        cars = cursor.fetchall()
+
+    response['status_code'] = 200
+    response['data'] = cars
+    return response
 
 
 # ---Get TICKETS---
@@ -356,6 +415,7 @@ mail = Mail(app)
 def send_email(subject, message, email_address):
     email_to_send = Message(subject, sender='vuyanilottoapp@gmail.com',
                             recipients=[email_address])
+
     email_to_send.body = message
     mail.send(email_to_send)
 
@@ -372,7 +432,7 @@ def reminder_email(user_id):
     print(user)
 
     first_name = user[2] + user[3]
-    email = user[1]
+    email = user[5]
     print(email)
     with sqlite3.connect("plane_tkt.db") as conn:
         cursor = conn.cursor()
@@ -404,7 +464,7 @@ def reminder_email(user_id):
                    " the arrival time will be at " + arrival + " the ticket is a " + type_ + " at a price of " + price +
                    " on the " + date_bought, email)
         response["status_code"] = 200
-        response["description"] = "chores  sent successfully"
+        response["description"] = "Flight Details sent successfully"
     return jsonify(response)
 
 
