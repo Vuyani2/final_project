@@ -2,6 +2,7 @@ import hmac
 import sqlite3
 import datetime
 from flask_cors import CORS
+from flask_mail import Message, Mail
 
 
 from flask import Flask, request, jsonify, redirect
@@ -65,7 +66,9 @@ def init_tickets_table():
                      "arrival TEXT NOT NULL,"
                      "price TEXT NOT NULL,"
                      "type TEXT NOT NULL,"
-                     "date_bought TEXT NOT NULL)")
+                     "user_id INTEGER NOT NULL,"
+                     "date_bought TEXT NOT NULL,"
+                     "FOREIGN KEY (user_id) REFERENCES user(user_id))")
     print("tickets table created successfully.")
 
 
@@ -146,6 +149,7 @@ def add_ticket():
         arrival = request.json['arrival']
         price = request.json['price']
         type_ = request.json['type_']
+        user_id = request.json['user_id']
         date_bought = datetime.datetime.now()
 
         with sqlite3.connect('plane_tkt.db') as conn:
@@ -158,7 +162,8 @@ def add_ticket():
                            "arrival,"
                            "price,"
                            "type,"
-                           "date_bought) VALUES(?, ?, ?, ?, ?, ?, ?, ?)", (from_, to_, airline, departure, arrival, price, type_, date_bought))
+                           "user_id,"
+                           "date_bought) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)", (from_, to_, airline, departure, arrival, price, type_, user_id, date_bought))
             conn.commit()
             response["status_code"] = 201
             response['description'] = "Ticket added successfully"
@@ -320,6 +325,60 @@ def get_tkt(from_, to_):
         response["status_code"] = 200
         response["description"] = "ticket retrieved successfully"
         response["data"] = cursor.fetchall()
+    return jsonify(response)
+
+
+app.config['MAIL_PORT'] = 465
+app.config['MAIL_USE_SSL'] = True
+app.config['MAIL_USE_TLS'] = False
+# app.config['SECRET_KEY'] = "super-secret"
+app.config['MAIL_SERVER'] = "smtp.gmail.com"
+app.config['MAIL_PASSWORD'] = "Vuya@2019"
+app.config['MAIL_USERNAME'] = "vuyanilottoapp@gmail.com"
+
+mail = Mail(app)
+
+
+def send_email(subject, message, email_address):
+    email_to_send = Message(subject, sender='vuyanilottoapp@gmail.com',
+                            recipients=[email_address])
+    email_to_send.body = message
+    mail.send(email_to_send)
+
+
+@app.route('/send-email/<int:user_id>/', methods=["POST"])
+def reminder_email(user_id):
+    print(user_id)
+    response = {}
+    with sqlite3.connect("plane_tkt.db") as conn:
+        cursor = conn.cursor()
+        cursor.execute(f"SELECT * FROM user WHERE user_id='{user_id}'")
+        user = cursor.fetchone()
+
+    print(user)
+
+    first_name = user[1] + user[2]
+    email = user[3]
+    print(email)
+    with sqlite3.connect("plane_tkt.db") as conn:
+        cursor = conn.cursor()
+        cursor.execute(f"SELECT * FROM tickets WHERE user_id='{user_id}'")
+        chores = cursor.fetchone()
+
+        print(chores)
+        print(chores[2])
+        print(chores[4])
+        print(chores[5])
+
+        types_of_chores = chores[2]
+        time = chores[4]
+        date = chores[5]
+
+        send_email("you successfully bought a ticket thank oy for using Cheap Tickets", "hey "
+                   + first_name + " here is your Schedule " +
+                   types_of_chores + " at " + time + " on the " + date, email)
+        response["status_code"] = 200
+        response["description"] = "chores  sent successfully"
     return jsonify(response)
 
 
