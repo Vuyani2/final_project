@@ -143,10 +143,24 @@ def user_registration():
                            "password,"
                            "email,"
                            "mobile_number) VALUES(?, ?, ?, ?, ?, ?)", (first_name, last_name, username, password, email, mobile_number))
+
             conn.commit()
             response["message"] = "success"
             response["status_code"] = 201
         return response
+
+
+# ---Image Hosting---
+@app.route('/image-hosting/')
+def image_hosting():
+    with sqlite3.connect("plane_tkt.db.db") as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT image FROM car_hire WHERE id='2'")
+        image = cursor.fetchone()
+        for i in image:
+            image1 = i
+    return redirect(image1)
+
 
 @app.route('/get-user/', methods=["GET"])
 def get_user():
@@ -257,6 +271,7 @@ def get_tickets():
     response['status_code'] = 200
     response['data'] = tickets
     return response
+
 
 
 # ---Sorting tickets by price---
@@ -436,6 +451,15 @@ def send_email(subject, message, email_address):
 @app.route('/send-email/<int:user_id>/', methods=["POST"])
 def reminder_email(user_id):
     print(user_id)
+    from_ = request.json['from_']
+    to_ = request.json['to_']
+    airline = request.json['airline']
+    departure = request.json['departure']
+    arrival = request.json['arrival']
+    price = request.json['price']
+    type_ = request.json['type_']
+    # user_id = request.json['user_id']
+
     response = {}
     with sqlite3.connect("plane_tkt.db") as conn:
         cursor = conn.cursor()
@@ -452,28 +476,28 @@ def reminder_email(user_id):
         cursor.execute(f"SELECT * FROM tickets WHERE user_id='{user_id}'")
         tkts = cursor.fetchone()
 
-        print(tkts)
-        print(tkts[2])
-        print(tkts[3])
-        print(tkts[4])
-        print(tkts[5])
-        print(tkts[6])
-        print(tkts[7])
-        print(tkts[8])
-
-
-        from_ = tkts[1]
-        to_ = tkts[2]
-        plane = tkts[3]
-        depature = tkts[4]
-        arrival = tkts[5]
-        price = tkts[6]
-        type_ = tkts[7]
+        # print(tkts)
+        # print(tkts[2])
+        # print(tkts[3])
+        # print(tkts[4])
+        # print(tkts[5])
+        # print(tkts[6])
+        # print(tkts[7])
+        # print(tkts[8])
+        #
+        #
+        # from_ = tkts[1]
+        # to_ = tkts[2]
+        # plane = tkts[3]
+        # departure = tkts[4]
+        # arrival = tkts[5]
+        # price = tkts[6]
+        # type_ = tkts[7]
         date_bought = tkts[9]
 
         send_email("you successfully bought a ticket thank oy for using Cheap Tickets", "hey "
                    + first_name + " this is to confirm that you have succefully bought a plane ticket to travel from " +
-                    from_ + " to " + to_ + " flying with " + plane + "the plane will be taking of at " + depature +
+                    from_ + " to " + to_ + " flying with " + airline + "the plane will be taking of at " + departure +
                    " the arrival time will be at " + arrival + " the ticket is a " + type_ + " at a price of " + price +
                    " on the " + date_bought, email)
         response["status_code"] = 200
