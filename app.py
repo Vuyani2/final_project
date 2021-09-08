@@ -164,9 +164,9 @@ def get_user():
 
 
 # ---Creating Products---
-@app.route('/add-ticket/', methods=["POST"])
+@app.route('/add-car/', methods=["POST"])
 #@jwt_required()
-def add_ticket():
+def add_car():
     response = {}
 
     if request.method == "POST":
@@ -193,9 +193,9 @@ def add_ticket():
             response['description'] = "Car added successfully"
         return response
 
-@app.route('/add-car/', methods=["POST"])
+@app.route('/add-ticket/', methods=["POST"])
 #@jwt_required()
-def add_car():
+def add_ticket():
     response = {}
 
     if request.method == "POST":
@@ -272,6 +272,19 @@ def sort_tickets():
 
     response['status_code'] = 200
     response['data'] = tickets
+    return response
+
+# ---Delete Car---
+@app.route("/delete-car/<int:ticket_id>")
+#@jwt_required()
+def delete_car(ticket_id):
+    response = {}
+    with sqlite3.connect("plane_tkt.db") as conn:
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM car_hire WHERE id=" + str(ticket_id))
+        conn.commit()
+        response['status_code'] = 200
+        response['message'] = "ticket deleted successfully."
     return response
 
 
@@ -472,4 +485,11 @@ if __name__ == "__main__":
     app.debug = True
     app.run()
 
-
+# with sqlite3.connect("plane_tkt.db") as conn:
+#     cursor = conn.cursor()
+#     cursor.execute(f"ALTER TABLE car_hire ADD COLUMN Image TEXT")
+#     conn.commit()
+# with sqlite3.connect("plane_tkt.db") as conn:
+#     cursor = conn.cursor()
+#     cursor.execute(f"SELECT * FROM car_hire")
+#     print(cursor.fetchall())
