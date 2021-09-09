@@ -207,6 +207,7 @@ def add_car():
             response['description'] = "Car added successfully"
         return response
 
+
 @app.route('/add-ticket/', methods=["POST"])
 #@jwt_required()
 def add_ticket():
@@ -457,7 +458,7 @@ def reminder_email(user_id):
     departure = request.json['departure']
     arrival = request.json['arrival']
     price = request.json['price']
-    type_ = request.json['type_']
+    type_ = request.json['type']
     # user_id = request.json['user_id']
 
     response = {}
@@ -466,15 +467,15 @@ def reminder_email(user_id):
         cursor.execute(f"SELECT * FROM user WHERE user_id='{user_id}'")
         user = cursor.fetchone()
 
-    print(user)
+        print(user)
 
-    first_name = user[2] + user[3]
-    email = user[5]
-    print(email)
-    with sqlite3.connect("plane_tkt.db") as conn:
-        cursor = conn.cursor()
-        cursor.execute(f"SELECT * FROM tickets WHERE user_id='{user_id}'")
-        tkts = cursor.fetchone()
+        first_name = user[2] + user[3]
+        email = user[5]
+        print(email)
+        with sqlite3.connect("plane_tkt.db") as conn:
+            cursor = conn.cursor()
+            cursor.execute(f"SELECT * FROM tickets WHERE user_id='{user_id}'")
+            tkts = cursor.fetchone()
 
         # print(tkts)
         # print(tkts[2])
