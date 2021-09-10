@@ -16,6 +16,7 @@ def dict_factory(cursor, row):
         d[col[0]] = row[idx]
     return d
 
+
 class User(object):
     def __init__(self, id, username, password):
         self.id = id
@@ -34,9 +35,6 @@ def fetch_users():
         for data in users:
             new_data.append(User(data[0], data[3], data[4]))
     return new_data
-
-
-
 
 
 # ---Creating User Table---
@@ -72,7 +70,7 @@ def init_tickets_table():
     print("tickets table created successfully.")
 
 
-#---Creating Car Hire Table---
+# ---Creating Car Hire Table---
 def init_car_hire_table():
     with sqlite3.connect('plane_tkt.db') as conn:
         conn.execute("CREATE TABLE IF NOT EXISTS car_hire (id INTEGER PRIMARY KEY AUTOINCREMENT,"
@@ -84,6 +82,7 @@ def init_car_hire_table():
                      "price TEXT NOT NULL,"
                      "date_ordered TEXT NOT NULL)")
         print("car_hire table created successfully.")
+
 
 init_user_table()
 init_tickets_table()
@@ -201,7 +200,8 @@ def add_car():
                            "fuel_policy,"
                            "price,"
                            "image,"
-                           "date_ordered) VALUES(?, ?, ?, ?, ?, ?, ?, ?)", (car_name, pick_up, supplier, time, fuel_policy, price, image, date_ordered))
+                           "date_ordered) VALUES(?, ?, ?, ?, ?, ?, ?, ?)", (car_name, pick_up, supplier, time,
+                                                                            fuel_policy, price, image, date_ordered))
             conn.commit()
             response["status_code"] = 201
             response['description'] = "Car added successfully"
@@ -235,11 +235,13 @@ def add_ticket():
                            "price,"
                            "type,"
                            "user_id,"
-                           "date_bought) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)", (from_, to_, airline, departure, arrival, price, type_, user_id, date_bought))
+                           "date_bought) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)", (from_, to_, airline, departure, arrival,
+                                                                              price, type_, user_id, date_bought))
             conn.commit()
             response["status_code"] = 201
             response['description'] = "Ticket added successfully"
         return response
+
 
 # ---Get Car---
 @app.route('/get-car/', methods=["GET"])
@@ -474,28 +476,11 @@ def reminder_email(user_id):
             cursor.execute(f"SELECT * FROM tickets WHERE user_id='{user_id}'")
             tkts = cursor.fetchone()
 
-        # print(tkts)
-        # print(tkts[2])
-        # print(tkts[3])
-        # print(tkts[4])
-        # print(tkts[5])
-        # print(tkts[6])
-        # print(tkts[7])
-        # print(tkts[8])
-        #
-        #
-        # from_ = tkts[1]
-        # to_ = tkts[2]
-        # plane = tkts[3]
-        # departure = tkts[4]
-        # arrival = tkts[5]
-        # price = tkts[6]
-        # type_ = tkts[7]
         date_bought = tkts[9]
 
         send_email("you successfully bought a ticket thank oy for using Cheap Tickets", "hey "
-                   + first_name + " this is to confirm that you have succefully bought a plane ticket to travel from " +
-                    from_ + " to " + to_ + " flying with " + airline + "the plane will be taking of at " + departure +
+                   + first_name + " this is to confirm that you have successfully bought a plane ticket to travel from "
+                   + from_ + " to " + to_ + " flying with " + airline + "the plane will be taking of at " + departure +
                    " the arrival time will be at " + arrival + " the ticket is a " + type_ + " at a price of " + price +
                    " on the " + date_bought, email)
         response["status_code"] = 200
@@ -507,11 +492,3 @@ if __name__ == "__main__":
     app.debug = True
     app.run()
 
-# with sqlite3.connect("plane_tkt.db") as conn:
-#     cursor = conn.cursor()
-#     cursor.execute(f"ALTER TABLE car_hire ADD COLUMN Image TEXT")
-#     conn.commit()
-# with sqlite3.connect("plane_tkt.db") as conn:
-#     cursor = conn.cursor()
-#     cursor.execute(f"SELECT * FROM car_hire")
-#     print(cursor.fetchall())
