@@ -188,6 +188,7 @@ def add_car():
         time = request.json['time']
         fuel_policy = request.json['fuel_policy']
         price = request.json['price']
+        image = request.json['image']
         date_ordered = datetime.datetime.now()
 
         with sqlite3.connect('plane_tkt.db') as conn:
@@ -199,7 +200,8 @@ def add_car():
                            "time,"
                            "fuel_policy,"
                            "price,"
-                           "date_ordered) VALUES(?, ?, ?, ?, ?, ?, ?)", (car_name, pick_up, supplier, time, fuel_policy, price, date_ordered))
+                           "image,"
+                           "date_ordered) VALUES(?, ?, ?, ?, ?, ?, ?, ?)", (car_name, pick_up, supplier, time, fuel_policy, price, image, date_ordered))
             conn.commit()
             response["status_code"] = 201
             response['description'] = "Car added successfully"
@@ -271,7 +273,6 @@ def get_tickets():
     return response
 
 
-
 # ---Sorting tickets by price---
 @app.route('/sort-tickets/', methods=["GET"])
 def sort_tickets():
@@ -286,6 +287,7 @@ def sort_tickets():
     response['status_code'] = 200
     response['data'] = tickets
     return response
+
 
 # ---Delete Car---
 @app.route("/delete-car/<int:ticket_id>")
