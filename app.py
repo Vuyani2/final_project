@@ -448,14 +448,14 @@ def send_email(subject, message, email_address):
 
 @app.route('/send-email/<int:user_id>/', methods=["POST"])
 def reminder_email(user_id):
-    print(user_id)
-    from_ = request.json['from_']
-    to_ = request.json['to_']
-    airline = request.json['airline']
-    departure = request.json['departure']
-    arrival = request.json['arrival']
-    price = request.json['price']
-    type_ = request.json['type']
+    print(request.json[0])
+    from_ = request.json[0]['from_']
+    to_ = request.json[0]['to_']
+    airline = request.json[0]['airline']
+    departure = request.json[0]['departure']
+    arrival = request.json[0]['arrival']
+    price = request.json[0]['price']
+    type_ = request.json[0]['type']
     # user_id = request.json['user_id']
 
     response = {}
