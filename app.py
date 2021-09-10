@@ -115,7 +115,6 @@ jwt = JWT(app, authenticate, identity)
 
 
 @app.route('/protected')
-#@jwt_required()
 def protected():
     return '%s' % current_identity
 
@@ -179,7 +178,6 @@ def get_user():
 
 # ---Creating Products---
 @app.route('/add-car/', methods=["POST"])
-#@jwt_required()
 def add_car():
     response = {}
 
@@ -209,7 +207,6 @@ def add_car():
 
 
 @app.route('/add-ticket/', methods=["POST"])
-#@jwt_required()
 def add_ticket():
     response = {}
 
@@ -292,21 +289,20 @@ def sort_tickets():
 
 # ---Delete Car---
 @app.route("/delete-car/<int:ticket_id>")
-#@jwt_required()
 def delete_car(ticket_id):
     response = {}
     with sqlite3.connect("plane_tkt.db") as conn:
         cursor = conn.cursor()
         cursor.execute("DELETE FROM car_hire WHERE id=" + str(ticket_id))
         conn.commit()
-        response['status_code'] = 200
-        response['message'] = "ticket deleted successfully."
+
+    response['status_code'] = 200
+    response['message'] = "ticket deleted successfully."
     return response
 
 
 # ---Delete Tickets---
 @app.route("/delete-ticket/<int:ticket_id>")
-#@jwt_required()
 def delete_ticket(ticket_id):
     response = {}
     with sqlite3.connect("plane_tkt.db") as conn:
@@ -320,7 +316,6 @@ def delete_ticket(ticket_id):
 
 # ---Edit Tickets---
 @app.route('/edit-ticket/<int:ticket_id>/', methods=["PUT"])
-#@jwt_required()
 def edit_ticket(ticket_id):
     response = {}
 
